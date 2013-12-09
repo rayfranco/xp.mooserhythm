@@ -22,7 +22,8 @@ THREE.PeerControls.prototype = Object.create(THREE.EventDispatcher.prototype);
 
 THREE.PeerControls.prototype.mousemove = function(e) {
     var rel = 2/window.innerWidth*e.clientX-1;
-    this.pos = rel * this.settings.distance;
+        pos: rel * this.settings.distance,
+        this.pos = rel * this.settings.distance;
 }
 
 THREE.PeerControls.prototype.update = function(x) {

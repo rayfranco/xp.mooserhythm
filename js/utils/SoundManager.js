@@ -21,6 +21,12 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
         this.playing  = false;
         this.source   = null;
         this.context  = new AudioContext();
+        this.filter   = this.context.createBiquadFilter();
+
+        this.introLapse = 0;
+
+        this.filter.type = 0; // Low-pass filter. See BiquadFilterNode docs
+        this.filter.frequency.value = 300; // Set cutoff to 440 HZ
 
         this.startAt = 0;
 
@@ -36,18 +42,23 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
         // Request and load sound
         var request = new XMLHttpRequest();
-        
+
         request.open('GET', this.settings.src, true);
         request.responseType = 'arraybuffer';
         request.onload = function() {
             this.context.decodeAudioData(request.response, function(buffer) {
                 this.source = this.context.createBufferSource();
                 this.source.buffer = buffer;
-                this.source.connect(this.context.destination);
+                this.source.connect(this.filter);
+                this.filter.connect(this.context.destination);
+
                 this.ready  = true;
                 this.source.onended = this.settings.onEnd.bind(this);
                 this.settings.onReady.call(this);
                 if (this.settings.autoplay) {
+                    this.source.loopStart = 4.450;
+                    this.source.loopEnd = 8.144;
+                    this.source.loop = true;
                     this.play();
                 }
             }.bind(this), function(err){
@@ -62,6 +73,16 @@ window.AudioContext = window.AudioContext || window.webkitAudioContext;
         this.source.start(this.startAt);
         this.settings.onStart.call(this);
     };
+
+    APP.SoundManager.prototype.stopLoop = function() {
+        this.introLapse = this.getTime();
+        if (this.source)
+            this.source.loop = false;
+        TweenLite.to(this.filter.frequency,1,{
+            value: 22050,
+            ease: Power2.easeOut
+        });
+    }
 
     APP.SoundManager.prototype.getTime = function() {
         return this.context.currentTime;
