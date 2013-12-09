@@ -74,10 +74,10 @@ $(function(){
             b += 1;
         }
         if (APP.music.introLapse > 0 && mn < time - APP.music.introLapse) {
+            if (!soundMap[tc]) return;
             tc+=1;
             mn = soundMap[tc].t;
             APP.moose.intensity = soundMap[tc].w;
-            console.log()
         }
     }
 
