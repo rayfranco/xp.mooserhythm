@@ -181,8 +181,6 @@ var soundMap = [];
     // Vertices modifier
     APP.Moose.prototype._updateVertices = function() {
 
-        return;
-
         if (!this.moose) return;
 
         var vertices = this.moose.geometry.vertices;
